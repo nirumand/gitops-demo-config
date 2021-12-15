@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-demo-svc
+  labels:
+    app.kubernetes.io/name: webserver-demo
+    app.kubernetes.io/instance: webserver-demo
+    app.kubernetes.io/version: 1.0.0
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: webserver-demo

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver-demo
+  labels:
+    app.kubernetes.io/name: webserver-demo
+    app.kubernetes.io/instance: webserver-demo
+    version: 1.0.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver-demo
+  template:
+    metadata:
+      annotations:
+        # This is to make sure images is updated
+        rollme: "DBQwVsadsa"
+      labels:
+        app: webserver-demo
+        version: 1.0.0
+    spec:
+      containers:
+      - name: webserver-demo
+        image: nginx:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 80
+        volumeMounts:
+        - name: app-html
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: html
+      volumes:
+      - name: app-html
+        configMap:
+          name: webserver-demo-cm

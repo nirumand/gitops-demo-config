@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webserver-demo-ingress
+  labels:
+    app.kubernetes.io/name: webserver-demo
+    app.kubernetes.io/instance: webserver-demo
+    version: 1.0.0
+spec:
+  rules:
+  - host: "webserver-demo.lvh.me"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: webserver-demo-svc
+            port:
+              number: 80

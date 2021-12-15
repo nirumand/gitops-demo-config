@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: argocd
+  name: gitops-config-repo-dev
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://github.com/nirumand/gitops-demo-config.git
+  name: config-dev
+  project: gitop-dev
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: argocd
+  name: gitops-config-repo-test
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://github.com/nirumand/gitops-demo-config.git
+  name: config-test
+  project: gitop-test
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: argocd
+  name: gitops-config-repo-prod
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://github.com/nirumand/gitops-demo-config.git
+  name: config-prod
+  project: gitop-prod
+---

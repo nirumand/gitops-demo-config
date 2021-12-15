@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-ingress
+spec:
+  rules:
+  - host: "{{ .Chart.Name }}.lvh.me"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: {{.Chart.Name}}-svc
+            port:
+              number: {{ .Values.servicePort | default 80}}

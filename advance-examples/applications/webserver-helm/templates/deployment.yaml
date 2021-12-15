@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Chart.Name}}
+  labels:
+    app.kubernetes.io/name: {{.Chart.Name}}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{.Chart.Version}}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{.Chart.Name}}
+  template:
+    metadata:
+      annotations:
+        # This is to make sure images is updated
+        rollme: {{ randAlphaNum 5 | quote }}
+      labels:
+        app: {{ .Chart.Name }}
+        version: {{ .Chart.Version }}
+    spec:
+      containers:
+      - name: {{.Chart.Name}}
+        image: nginx:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: {{ .Values.containerPort | default 80 }}
+        volumeMounts:
+        - name: app-html
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: html
+      volumes:
+      - name: app-html
+        configMap:
+          name: {{.Chart.Name}}-cm

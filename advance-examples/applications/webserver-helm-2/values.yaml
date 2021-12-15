@@ -1,0 +1,8 @@
+title: Application with helm
+textMessage: "SAHA DevOps Group : This is GitOps demo for helm"
+backGroundColor: green
+
+replicas: 1
+containerPort: 80
+servicePort: 80
+nodePort: 30080

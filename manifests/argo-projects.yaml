@@ -1,0 +1,134 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gitops-dev
+  # Finalizer that ensures that project is not deleted until it is not referenced by any application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project description
+  description: ArgoProject for Dev Env
+  # Allow manifests to deploy from any Git repos
+  sourceRepos:
+  - '*'
+
+  destinations:
+  - namespace: demo-dev
+    server: https://kubernetes.default.svc
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+
+  # Deny all cluster-scoped resources from being created, except for Namespace
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+
+  roles:
+  # A role which provides full access to all resources on argocd project gitops-dev
+  - name: gitops-dev-admin
+    description: Sync privileges for project gitops-dev
+    policies:
+    - p, proj:gitops-dev:gitops-dev-admin, applications, *, gitops-dev/*, allow
+    groups:
+    - gitops-dev
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gitops-test
+  # Finalizer that ensures that project is not deleted until it is not referenced by any application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project description
+  description: ArgoProject for Test Env
+  # Allow manifests to deploy from any Git repos
+  sourceRepos:
+  - '*'
+
+  destinations:
+  - namespace: demo-test
+    server: https://kubernetes.default.svc
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+
+  # Deny all cluster-scoped resources from being created, except for Namespace
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+
+  roles:
+  # A role which provides full access to all resources on argocd project gitops-test
+  - name: gitops-test-admin
+    description: Sync privileges for project gitops-test
+    policies:
+    - p, proj:gitops-test:gitops-test-admin, applications, *, gitops-test/*, allow
+    groups:
+    - gitops-test
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gitops-prod
+  # Finalizer that ensures that project is not deleted until it is not referenced by any application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project description
+  description: ArgoProject for Prod Env
+  # Allow manifests to deploy from any Git repos
+  sourceRepos:
+  - '*'
+
+  destinations:
+  - namespace: demo-prod
+    server: https://kubernetes.default.svc
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+
+  # Deny all cluster-scoped resources from being created, except for Namespace
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+
+  roles:
+  # A role which provides full access to all resources on argocd project gitops-rabobank-air-fuse7-dev
+  - name: gitops-prod-admin
+    description: Sync privileges for project gitops-prod
+    policies:
+    - p, proj:gitops-prod:gitops-prod-admin, applications, *, gitops-prod/*, allow
+    groups:
+    - gitops-prod
+  syncWindows:
+  - kind: allow
+    schedule: '0 22 * * *'
+    duration: 2h
+    applications:
+    - '*'
+    manualSync: true
+    namespaces:
+    - demo-prod
+
+  - kind: deny
+    schedule: '0 8 * * *'
+    duration: 12h
+    manualSync: false
+    namespaces:
+    - demo-prod
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: argocd
+  name: argocd-cm
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  accounts.gitops-dev: apiKey, login
+  accounts.gitops-dev.enabled: "true"
+  accounts.gitops-test: apiKey, login
+  accounts.gitops-test.enabled: "true"  
+  accounts.gitops-prod: apiKey, login
+  accounts.gitops-prod.enabled: "true"

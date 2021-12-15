@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name}}-cm
+  labels:
+    app.kubernetes.io/name: {{.Chart.Name}}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{.Chart.Version}}
+data:
+# To be mounted on /usr/share/nginx/html
+  html: |
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>{{ .Values.title }}</title>
+    </head>
+    <body  style="background-color:{{ .Values.backGroundColor }};">
+      <h2>Hello from Nginx container</h2>
+      <h3>{{ .Values.textMessage }}</h3>
+    </body>
+    </html>
