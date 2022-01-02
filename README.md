@@ -3,7 +3,7 @@ This repository hosts examples and instruction on how to simply configure and us
 Please refere to [ArgoCD documentation](https://argo-cd.readthedocs.io/en/stable/) for detailed instructions.
 
 ---
-**Waning**
+**Warning**
 
 The installation and configuration manifests are for demo purposes and __are not__ suited for production envioroments. 
 
@@ -29,7 +29,7 @@ In case if any resource already exists, lets first clean up the cluster
 
 ```bash
 kind delete cluster --name gitops-demo
----
+```
 
 We will use KIND to create a Master node with two Worker nodes.
 
