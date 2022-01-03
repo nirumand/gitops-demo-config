@@ -5,15 +5,17 @@ Please refere to [ArgoCD documentation](https://argo-cd.readthedocs.io/en/stable
 ---
 **Warning**
 
-The installation and configuration manifests are for demo purposes and __are not__ suited for production envioroments. 
+The installation and configuration manifests are for demo purposes and __are not__ suited for production environments. 
 
 ---
 
 # Repository Structure
-There are two sets of examples, namely simple and advance. The examples on the `simple-examples` show basic features of ArgoCD
-The folder `advance-examples` shows additional features, such as `declartive-setup`, `app-of-apps`, `sync-windows`, `configuration repositories` and etc.
+There are two sets of examples:  
 
-The folder `manifests` holds the Kubernets manifests to install various resources, which will be referenced in this document relative to the repository root path.
+- The examples on the `simple-examples` folder show basic features of ArgoCD.  
+- The folder `advance-examples` shows additional features, such as `declartive-setup`, `app-of-apps`, `sync-windows`, `configuration repositories` and etc.  
+
+In addition, the folder `manifests` holds the Kubernets manifests to install various resources which will be referenced in this document relative to the repository root path.
 
 And finally the folder `images` contains the ArgoCD UI snapshots for the purpose of documentation.
 
@@ -25,24 +27,23 @@ And finally the folder `images` contains the ArgoCD UI snapshots for the purpose
 ```
 
 # Setup Cluster
-In case if any resource already exists, lets first clean up the cluster
+Please first clone the repository on your local machine and change directory to the root of the this git repository.
+
+We will use [KIND](https://github.com/kubernetes-sigs/kind/releases) to create a control-plane node with two worker nodes.
 
 ```bash
-kind delete cluster --name gitops-demo
-```
+# In case any clusters already exists from previous atempts. run below:
+# kind delete cluster --name gitops-demo
 
-We will use KIND to create a Master node with two Worker nodes.
-
-```bash
 kind create cluster --name gitops-demo --image kindest/node:v1.22.0 --config ./manifests/gitops-demo-cluster.yaml
 ```
 
-To have better experience and avoid using NodePort for services we can also use ingress to publish services on port 80 and 443.
+To have better experience and avoid using NodePort for services we can also use __Ingress__ to publish services on port 80 and 443.
 
 In addition we will use `hostname` routing along `lvh.me` DNS service. 
 Any request to `lvh.me` will result in IP `127.0.0.1`, but the request will have our desired hostname in request header which will be used by Ingress to route the traffic.
 
-Our setup will use two techonolgies:
+Our setup will use following techonolgies:
 
 - __Ingress__ for routing external traffic to internal services
 - __ArgoCD__ as GitOps Controller to deploy applications
@@ -57,22 +58,22 @@ In addition we will use following cli tools:
 
 
 ## Ingress
-Run the command to install:
+1. Run the command to install:
 
-```bash
-kubectl apply -f manifests/ingress-install.yaml
-```
+   ```bash
+   kubectl apply -f manifests/ingress-install.yaml
+   ```
 
-To Verify installation run the command:
+2. Verify installation:
 
-```bash
-kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
-```
+   ```bash
+   kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
+   ```
 
-The result is like below line (pod name will be different ):
-```text
-pod/ingress-nginx-controller-b7b74c7b7-v5pvt condition met
-```
+   The result is like below line (pod name will be different ):
+   ```text
+   pod/ingress-nginx-controller-b7b74c7b7-v5pvt condition met
+   ```
 
 ## ArgoCD
 We will install argocd in a separate  namespace `argocd`:
@@ -113,7 +114,7 @@ In this section, we will deploy application using ArgoCD UI. To do so, we need t
 1. Configure Config Repository: This can be done either in UI by adding `https://github.com/nirumand/gitops-demo-config.git`
 or `argocd` cli command:
 
-  ![Add git repository by UI ](./images/add-repo.png)
+   ![Add git repository by UI ](./images/add-repo.png)
 
    ```bash
     # Get the password 
@@ -139,13 +140,13 @@ or `argocd` cli command:
 
 3. Add Application using UI  
 
-    ![add-app-part-1](./images/add-app-1.png)  
+   ![add-app-part-1](./images/add-app-1.png)  
 
-    ![add-app-part-2](./images/add-app-2.png)
+   ![add-app-part-2](./images/add-app-2.png)
 
 4. Verify Application Health  
 
-    ![app-health](./images/app-health-argo.png)
+   ![app-health](./images/app-health-argo.png)
 
 5. Access the applications: http://webapp-demo.lvh.me  
    
@@ -252,19 +253,18 @@ kubectl delete -f .\advance-examples\argoapp-app-of-apps.yaml -n argocd
 ```
 
 ## Sync Windows
-The application synchronization can be restricted to non-business hours. This avoid distruption in services during daily work.
+The application synchronization can be restricted to non-business hours. This avoids distruption in services during daily work.
 
 In this example, we have defined two sync windows for the argo project `gitops-prod`.
 
-- Allow sync every day at 8 PM fro two hours
-- Deny Sync every day at 8 am for 12 hours. During this time manual syncing is also disabled.
+- Allow sync everyday at 8 PM fro two hours
+- Deny Sync everyday at 8 am for 12 hours. During this time, manual syncing is also disabled.
 
-Application can be manually synced if it is not in the deny sync window. If application configuration is changed, ArgoCD will info about the sync windows:
+Application can be manually synced if it is not in the `deny` sync window. If application configuration is changed, ArgoCD will info about the sync windows:
 
 ```bash
 kubectl apply -f .\advance-examples\applications\argoapp-webserver-prod.yaml -n argocd
 ```
 
 ![argocd-sync-window-error](./images/argocd-syncwindow-error.png)
-
 
