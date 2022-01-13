@@ -15,7 +15,7 @@ data:
       <meta charset="utf-8">
       <title>Docker Nginx</title>
     </head>
-    <body  style="background-color:green;">
+    <body  style="background-color:gray;">
       <h2>Hello from Nginx container</h2>
       <h3>SAHA DevOps Group : This is GitOps demo</h3>
     </body>
